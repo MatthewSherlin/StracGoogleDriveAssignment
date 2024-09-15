@@ -46,3 +46,6 @@ The server will start up on https://127.0.0.1:5000/. Open this URL in your web b
 * The application relies on Google Drive API for file operations. Ensure that your Google Cloud project has the necessary API enabled and credentials properly configured.
 * The Flask application secret key is stored typically in a config.json file for security reasons. The design was made quite simple and less secure because of the testing environment and timing. If the application was planned for production environment, things such as this would be much more secure.
 * The ignoring of the secret files requires users to follow the same naming convention.
+
+## Known Issue
+* The downloads are titled with the drive ID for the files, not the file name. Due to time constraint, this wasn't able to be solved (yet!)
