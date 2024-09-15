@@ -6,10 +6,10 @@ import tempfile
 import drive
 
 app = Flask(__name__)
-#Remove testing key
 app.secret_key = 'testing_key'
 SCOPES = ['https://www.googleapis.com/auth/drive']
 
+# Start OAuth authorization flow
 @app.route('/authorize')
 def authorize():
     flow = InstalledAppFlow.from_client_secrets_file(
@@ -20,6 +20,7 @@ def authorize():
     authorization_url, _ = flow.authorization_url(access_type='offline', prompt='consent')
     return redirect(authorization_url)
 
+# Handle OAuth callback
 @app.route('/oauth2callback')
 def oauth2callback():
     flow = InstalledAppFlow.from_client_secrets_file(
@@ -32,6 +33,7 @@ def oauth2callback():
     session['credentials'] = drive.credentials_to_dict(credentials)
     return redirect(url_for('index'))
 
+# Display file list or redirect to authorization
 @app.route('/')
 def index():
     if 'credentials' not in session:
@@ -41,6 +43,7 @@ def index():
     files = drive.list_files(credentials)
     return render_template('index.html', files=files)
 
+# Upload a file to Google Drive
 @app.route('/upload', methods=['POST'])
 def upload():
     if 'credentials' not in session:
@@ -56,6 +59,7 @@ def upload():
         return redirect(url_for('index'))
     return 'No file uploaded.'
 
+# Download a file from Google Drive
 @app.route('/download/<file_id>', methods=['GET'])
 def download(file_id):
     if 'credentials' not in session:
@@ -67,6 +71,7 @@ def download(file_id):
     
     return send_from_directory(directory=tempfile.gettempdir(), path=file_id, as_attachment=True)
 
+# Delete a file from Google Drive
 @app.route('/delete/<file_id>', methods=['POST'])
 def delete(file_id):
     if 'credentials' not in session:
@@ -77,5 +82,6 @@ def delete(file_id):
     
     return redirect(url_for('index'))
 
+# Run the app
 if __name__ == '__main__':
     app.run(ssl_context='adhoc', debug=True)

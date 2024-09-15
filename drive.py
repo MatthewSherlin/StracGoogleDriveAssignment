@@ -5,9 +5,9 @@ from googleapiclient.discovery import build
 from googleapiclient.http import MediaFileUpload, MediaIoBaseDownload
 import os
 
-
 SCOPES = ['https://www.googleapis.com/auth/drive']
 
+# Authenticate and return credentials
 def authenticate():
     creds = None
     if os.path.exists('json/token.json'):
@@ -16,19 +16,19 @@ def authenticate():
         if creds and creds.expired and creds.refresh_token:
             creds.refresh(Request())
         else:
-            flow = InstalledAppFlow.from_client_secrets_file(
-                'json/client_secret.json', SCOPES)
+            flow = InstalledAppFlow.from_client_secrets_file('json/client_secret.json', SCOPES)
             creds = flow.run_local_server(port=0)
         with open('json/token.json', 'w') as token:
             token.write(creds.to_json())
     return creds
 
+# List files in Google Drive
 def list_files(creds):
     service = build('drive', 'v3', credentials=creds)
     results = service.files().list(pageSize=10, fields="files(id, name)").execute()
-    items = results.get('files', [])
-    return items
+    return results.get('files', [])
 
+# Upload a file
 def upload_file(creds, file_name, file_path):
     service = build('drive', 'v3', credentials=creds)
     file_metadata = {'name': file_name}
@@ -36,6 +36,7 @@ def upload_file(creds, file_name, file_path):
     file = service.files().create(body=file_metadata, media_body=media, fields='id').execute()
     print(f'File ID: {file.get("id")}')
 
+# Download a file
 def download_file(creds, file_id, file_path):
     service = build('drive', 'v3', credentials=creds)
     request = service.files().get_media(fileId=file_id)
@@ -45,11 +46,13 @@ def download_file(creds, file_id, file_path):
         while not done:
             _, done = downloader.next_chunk()
 
+# Delete a file
 def delete_file(creds, file_id):
     service = build('drive', 'v3', credentials=creds)
     service.files().delete(fileId=file_id).execute()
     print(f'File {file_id} deleted.')
 
+# Convert credentials to a dictionary
 def credentials_to_dict(creds):
     return {
         'token': creds.token,
