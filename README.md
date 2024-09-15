@@ -40,7 +40,14 @@ py app.py
 This will run the project in https because this is a requirement for OAuth 2.0 due to security reasons.
 The server will start up on https://127.0.0.1:5000/. Open this URL in your web browser to use the application.
 
+To run the tests
+```
+py -m unittest functionality_test.py
+py -m unittest integration_test.py
+```
 
+These test files will test the functionality of the methods used in listing, uploading, deleting, and downloading.
+The integration test is testing the routing of the application for these methods.
 
 ## Assumptions and Design Decisions
 * The application relies on Google Drive API for file operations. Ensure that your Google Cloud project has the necessary API enabled and credentials properly configured.
