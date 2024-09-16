@@ -24,7 +24,7 @@ class TestApp(unittest.TestCase):
         cls.service = build('drive', 'v3', credentials=cls.credentials)
 
     def setUp(self):
-        #Initialize session for each test
+        # Initialize session for each test
         with self.client.session_transaction() as sess:
             sess['credentials'] = {
                 'token': self.credentials.token,
@@ -36,7 +36,7 @@ class TestApp(unittest.TestCase):
             }
 
     def get_file_id(self, file_name):
-        #Get file ID from file name
+        # Get file ID from file name
         results = self.service.files().list(q=f"name='{file_name}'", spaces='drive',
                                             fields='files(id, name)').execute()
         items = results.get('files', [])
@@ -44,11 +44,12 @@ class TestApp(unittest.TestCase):
             return items[0]['id']
         return None
 
-    #Test file upload
+    # Test file upload
     def test_upload_file(self):
         with open(self.test_file_path, 'rb') as f:
             response = self.client.post('/upload', data={'file': (f, self.test_file_name)})
-        self.assertEqual(response.status_code, 302)  # Check redirect
+        # Check redirect
+        self.assertEqual(response.status_code, 302)  
     
     #Test file download
     def test_download_file(self):
@@ -57,6 +58,7 @@ class TestApp(unittest.TestCase):
         file_id = self.get_file_id(self.test_file_name)
         self.assertIsNotNone(file_id, "File ID should not be None")
 
+        # Ensure 200 code
         response = self.client.get(f'/download/{file_id}')
         self.assertEqual(response.status_code, 200)
 
@@ -76,9 +78,9 @@ class TestApp(unittest.TestCase):
         response = self.client.post(f'/delete/{file_id}')
         self.assertEqual(response.status_code, 302)
 
+    # Clean temporary files
     @classmethod
     def tearDownClass(cls):
-        """Clean up temporary files"""
         if os.path.exists(cls.test_file_path):
             os.remove(cls.test_file_path)
 

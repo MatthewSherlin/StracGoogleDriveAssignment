@@ -5,6 +5,7 @@ from drive import authenticate, list_files, upload_file, download_file, delete_f
 
 class TestGoogleDriveFunctions(unittest.TestCase):
 
+    # Set up temporary classes and files for testing use
     @classmethod
     def setUpClass(cls):
         cls.creds = authenticate()
@@ -25,11 +26,12 @@ class TestGoogleDriveFunctions(unittest.TestCase):
         if files is None:
             self.fail("Failed to retrieve files.")
         
+        # Test that files are uploaded properly
         for file in files:
             if file['name'] == self.test_file_name:
                 self.file_id = file['id']
                 break
-        
+        # File uploaded success or not
         self.assertIsNotNone(self.file_id, "File ID should not be None.")
 
     def test_download_file(self):
@@ -37,10 +39,12 @@ class TestGoogleDriveFunctions(unittest.TestCase):
         if self.file_id is None:
             self.test_upload_file()
         
+        # Download and assert it exists
         download_file(self.creds, self.file_id, self.downloaded_file_path)
         self.assertTrue(os.path.exists(self.downloaded_file_path), "Downloaded file should exist.")
 
     def test_delete_file(self):
+        # Simply upload and delete by checking ID
         if self.file_id is None:
             self.test_upload_file()
         
@@ -54,6 +58,7 @@ class TestGoogleDriveFunctions(unittest.TestCase):
             if file['id'] == self.file_id:
                 self.fail("File should have been deleted.")
 
+    # Remove temporary data
     @classmethod
     def tearDownClass(cls):
         if os.path.exists(cls.test_file_path):

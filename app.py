@@ -12,6 +12,7 @@ SCOPES = ['https://www.googleapis.com/auth/drive']
 # Start OAuth authorization flow
 @app.route('/authorize')
 def authorize():
+    # Get client secret information
     flow = InstalledAppFlow.from_client_secrets_file(
         'json/client_secret.json',
         SCOPES,
@@ -23,6 +24,7 @@ def authorize():
 # Handle OAuth callback
 @app.route('/oauth2callback')
 def oauth2callback():
+    # Get client secret information
     flow = InstalledAppFlow.from_client_secrets_file(
         'json/client_secret.json',
         SCOPES,
@@ -30,12 +32,14 @@ def oauth2callback():
     )
     flow.fetch_token(authorization_response=request.url)
     credentials = flow.credentials
+    #convert credentials to dictionary to serialize
     session['credentials'] = drive.credentials_to_dict(credentials)
     return redirect(url_for('index'))
 
 # Display file list or redirect to authorization
 @app.route('/')
 def index():
+    # If not session, then back to auth
     if 'credentials' not in session:
         return redirect(url_for('authorize'))
     
@@ -50,6 +54,7 @@ def upload():
         return redirect(url_for('authorize'))
     
     file = request.files['file']
+    # File information
     if file:
         file_path = os.path.join(tempfile.gettempdir(), file.filename)
         file.save(file_path)
@@ -68,7 +73,7 @@ def download(file_id):
     credentials = Credentials.from_authorized_user_info(session['credentials'])
     temp_file_path = os.path.join(tempfile.gettempdir(), file_id)
     drive.download_file(credentials, file_id, temp_file_path)
-    
+    # Serve file with Flask function 
     return send_from_directory(directory=tempfile.gettempdir(), path=file_id, as_attachment=True)
 
 # Delete a file from Google Drive
@@ -84,4 +89,5 @@ def delete(file_id):
 
 # Run the app
 if __name__ == '__main__':
+    # Self-sign SSL for OAuth 2.0 
     app.run(ssl_context='adhoc', debug=True)

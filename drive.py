@@ -7,7 +7,7 @@ import os
 
 SCOPES = ['https://www.googleapis.com/auth/drive']
 
-# Authenticate and return credentials
+# Authenticate and return credentials using token/client secret jsons
 def authenticate():
     creds = None
     if os.path.exists('json/token.json'):
@@ -32,6 +32,7 @@ def list_files(creds):
 def upload_file(creds, file_name, file_path):
     service = build('drive', 'v3', credentials=creds)
     file_metadata = {'name': file_name}
+    #API client function to upload
     media = MediaFileUpload(file_path, mimetype='application/octet-stream')
     file = service.files().create(body=file_metadata, media_body=media, fields='id').execute()
     print(f'File ID: {file.get("id")}')
@@ -41,6 +42,7 @@ def download_file(creds, file_id, file_path):
     service = build('drive', 'v3', credentials=creds)
     request = service.files().get_media(fileId=file_id)
     with open(file_path, 'wb') as fh:
+        # API client function to download
         downloader = MediaIoBaseDownload(fh, request)
         done = False
         while not done:
@@ -52,7 +54,7 @@ def delete_file(creds, file_id):
     service.files().delete(fileId=file_id).execute()
     print(f'File {file_id} deleted.')
 
-# Convert credentials to a dictionary
+# Convert credentials to a dictionary for easy use
 def credentials_to_dict(creds):
     return {
         'token': creds.token,
