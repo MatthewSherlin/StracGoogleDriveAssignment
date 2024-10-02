@@ -17,7 +17,7 @@ def authenticate():
             creds.refresh(Request())
         else:
             flow = InstalledAppFlow.from_client_secrets_file('json/client_secret.json', SCOPES)
-            creds = flow.run_local_server(port=0)
+            creds = flow.run_local_server(port=56700)
         with open('json/token.json', 'w') as token:
             token.write(creds.to_json())
     return creds
@@ -25,7 +25,7 @@ def authenticate():
 # List files in Google Drive
 def list_files(creds):
     service = build('drive', 'v3', credentials=creds)
-    results = service.files().list(pageSize=10, fields="files(id, name)").execute()
+    results = service.files().list(pageSize=15, fields="files(id, name)").execute()
     return results.get('files', [])
 
 # Upload a file
@@ -47,6 +47,7 @@ def download_file(creds, file_id, file_path):
         done = False
         while not done:
             _, done = downloader.next_chunk()
+    print(f'File {file_id} downloaded.')
 
 # Delete a file
 def delete_file(creds, file_id):
