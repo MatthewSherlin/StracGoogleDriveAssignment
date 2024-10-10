@@ -1,7 +1,5 @@
 ## Strac Google Drive Integrated Application 
 
-This simple tool was developed for Strac take home exam.
-
 This application integrates with the Google Drive API to provide functionalities for listing, uploading, downloading, and deleting files. The app is built using Python, Flask, Google Drive’s API for seamless file management.
 
 The application authenticates the users with OAuth 2.0 and allows for simple maniuplation of the Google Drive.
