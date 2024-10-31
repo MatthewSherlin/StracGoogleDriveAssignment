@@ -1,4 +1,4 @@
-## Strac Google Drive Integrated Application 
+## Google Drive Integrated Application 
 
 This application integrates with the Google Drive API to provide functionalities for listing, uploading, downloading, and deleting files. The app is built using Python, Flask, Google Drive’s API for seamless file management.
 
